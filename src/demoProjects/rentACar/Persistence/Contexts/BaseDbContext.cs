@@ -55,6 +55,53 @@ namespace Persistence.Contexts
             });
 
             // Ödev: Yeni nesneleri bind et.
+            modelBuilder.Entity<User>(a =>
+            {
+                a.ToTable("Users").HasKey(k => k.Id);
+                a.Property(u => u.Id).HasColumnName("Id");
+                a.Property(u => u.FirstName).HasColumnName("FirstName");
+                a.Property(u => u.LastName).HasColumnName("LastName");
+                a.Property(u => u.Email).HasColumnName("Email");
+                a.Property(u => u.PasswordSalt).HasColumnName("PasswordSalt");
+                a.Property(u => u.PasswordHash).HasColumnName("PasswordHash");
+                a.Property(u => u.AuthenticatorType).HasColumnName("AuthenticatorType");
+                a.HasMany(u => u.UserOperationClaims);
+                a.HasMany(u => u.RefreshTokens);
+            });
+
+            modelBuilder.Entity<OperationClaim>(a =>
+            {
+                a.ToTable("OperationClaims").HasKey(k => k.Id);
+                a.Property(o => o.Id).HasColumnName("Id");
+                a.Property(o => o.Name).HasColumnName("Name");
+            });
+
+            modelBuilder.Entity<UserOperationClaim>(a =>
+            {
+                a.ToTable("UserOperationClaims").HasKey(k => k.Id);
+                a.Property(u => u.Id).HasColumnName("Id");
+                a.Property(u => u.UserId).HasColumnName("UserId");
+                a.Property(u => u.OperationClaimId).HasColumnName("OperationClaimId");
+                a.HasOne(u => u.User);
+                a.HasOne(u => u.OperationClaim);
+            });
+
+            modelBuilder.Entity<RefreshToken>(a =>
+            {
+                a.ToTable("RefreshTokens").HasKey(k => k.Id);
+                a.Property(r => r.Id).HasColumnName("Id");
+                a.Property(r => r.UserId).HasColumnName("UserId");
+                a.Property(r => r.Token).HasColumnName("Token");
+                a.Property(r => r.Expires).HasColumnName("Expires");
+                a.Property(r => r.Created).HasColumnName("Created");
+                a.Property(r => r.CreatedByIp).HasColumnName("CreatedByIp");
+                a.Property(r => r.Revoked).HasColumnName("Revoked");
+                a.Property(r => r.RevokedByIp).HasColumnName("RevokedByIp");
+                a.Property(r => r.ReplacedByToken).HasColumnName("ReplacedByToken");
+                a.Property(r => r.ReasonRevoked).HasColumnName("ReasonRevoked");
+                a.HasOne(r => r.User);
+
+            });
 
             Brand[] brandEntitySeeds = { new(1, "BMW"), new(2, "Mercedes") };
             modelBuilder.Entity<Brand>().HasData(brandEntitySeeds);
